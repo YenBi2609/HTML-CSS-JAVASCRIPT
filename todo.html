@@ -1,0 +1,94 @@
+<!-- addEventListener (Observer design pattern) -->
+<!-- change event -->
+<!-- session storage : mất khi trình duyệt đóng , chủ yếu dùng khi reload-->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo list</title>
+</head>
+
+<body>
+    <input id="new-item" type="text" />
+    <button id="add-btn">Add</button>
+    <ul id="todo-list">
+    </ul>
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        var url = 'http://localhost:9081/todo';
+        axios.get(url).then(function(res){
+            var item = res.data;
+            console.log(res.data);
+            render(item);
+        })
+        var storageKey = 'todoList';
+        var dataString = localStorage.getItem(storageKey);
+         var htmlList = document.getElementById('todo-list');
+        var addBtn = document.getElementById('add-btn');
+
+        var todoList;
+
+        if (dataString) {
+            todoList = JSON.parse(dataString);
+        } else {
+            todoList = [];
+        }
+
+        var input = document.getElementById('new-item');
+        input.value = sessionStorage.getItem('draft');
+        // addBtn.onclick = addItem; // ko có ()
+        // onclick chỉ đăng kí được 1 sự kiện cho click
+        // addEventListener add được nhiều sự kiện cho click
+        addBtn.addEventListener('click', addItem); // thêm người nghe sự kiện cho sự kiện click của nút addBtn 
+        // hàm addItem được thực hiện khi sự kiện được trigger // a click event is triggered
+        addBtn.addEventListener('click', function () {
+            console.log("add button is clicked");
+        })// anonymous function
+
+        htmlList.addEventListener('click', onListCliked);
+        function onListCliked(event){
+            var button = event.target;
+            var i = parseInt(button.dataset.id);
+            todoList.splice(i,1);
+            render();
+            localStorage.setItem(storageKey, JSON.stringify(todoList));
+        }
+        input.addEventListener('change', updateSessionStorage);
+        function updateSessionStorage() {
+            sessionStorage.setItem('draft', input.value);
+        }
+        function addItem() {
+            // get value of the input
+            var input = document.getElementById("new-item");
+            var newItem = { content: input.value};
+            // todoList.push(newItem);
+            // render();
+            // input.value = "";
+            // localStorage.setItem(storageKey, JSON.stringify(todoList));
+            axios.post(url, newItem).then(function(res){
+                console.log('Item save', res);
+            })
+            window.location.href = 'new-item.html';
+        }
+        // function render(item) {
+        //     var content = item.map(function (item, index) {
+        //         return '<li>' + item.content + '<button data-id="'+  index +'">Delete</button></li>'
+        //     });
+        //     htmlList.innerHTML = content.join('');
+        // }
+        function render() {
+            var content = todoList.map(function (item,i) {
+                return '<li>' + item+ ' <button id="'+  i +'">Delete</button> <button id="'+  i +'">Update</button></li>'
+            });
+            htmlList.innerHTML = content.join('');
+        }
+         render();
+    </script>
+</body>
+
+</html>

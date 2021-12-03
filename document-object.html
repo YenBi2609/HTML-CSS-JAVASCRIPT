@@ -1,0 +1,53 @@
+<!-- 
+    Document object -- đối tượng document của trình duyệt
+    html liên kết với js qua dom
+
+    1.Properties
+    document.body
+    document.head
+
+    2.Methods
+    document.getElementById()
+ -->
+ <!-- HTMLElement 
+    .children  (Element) // các phần tử con của phần tử đó
+    .textContent (Node) // text của thẻ
+    
+    .appendChild() (Node) // thêm vào cuối của array // tạo element sau đó thêm element vào dom
+    .remove() (Element) // remove element ra khỏi dom
+document.createElement('li');
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Object</title>
+</head>
+
+<body>
+    <h1>My blog</h1>
+
+    <div id="entry1">
+        <h2>Great day bird watching</h2>
+        <p>Today I saw three...</p>
+        <p>I took a couple off photos...</p>
+    </div>
+    <script type="text/javascript">
+        // insert a new dom
+        var a = document.createElement('li');
+        a.textContent ="abcd"
+        entry1.appendChild(a);
+        // update a dom
+
+        a.textContent ="bbbbb"
+
+        // remove a dom
+        a.remove();
+    </script>
+
+</body>
+
+</html>
