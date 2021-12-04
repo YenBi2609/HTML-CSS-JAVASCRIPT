@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .container {
+            display: flex;
+            background-color: darkgrey;
+            flex-direction: row;
+            justify-content: flex-start;
+            height: 200px;
+            align-items: flex-end;
+        }
+        .child-1 {
+            background-color: brown;
+            flex-basis: 100px;
+            flex-grow: 1;
+        }
+        .child-2 {
+            background-color: orange;
+            flex-basis: 100px;
+            flex-grow: 0;
+        }
+        .child-3 {
+            background-color: hotpink;
+            flex-basis: 200px;
+            flex-grow: 0;
+        }
+        .container-swap .child-1{
+            order: 1;
+
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="child-1">Child 1rrrrrr</div>
+        <div class="child-2">Child 2</div>
+        <div class="child-3">Child 3</div>
+    </div>
+    <div class="container container-swap">
+        <div class="child-1">Child 1rrrrrr</div>
+        <div class="child-2">Child 2</div>
+        <div class="child-3">Child 3</div>
+    </div>
+    <div class="container container-swap">
+        <div class="child-1">Child 1rrrrrr</div>
+        <div class="child-2">Child 2</div>
+        <div class="child-3">Child 3</div>
+    </div>
+</body>
+</html>

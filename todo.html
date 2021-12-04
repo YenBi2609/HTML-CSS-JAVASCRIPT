@@ -83,7 +83,7 @@
         // }
         function render() {
             var content = todoList.map(function (item,i) {
-                return '<li>' + item+ ' <button id="'+  i +'">Delete</button> <button id="'+  i +'">Update</button></li>'
+                return '<li>' + item+ ' <button data-id="'+  i +'">Delete</button> <button id="'+  i +'">Update</button></li>'
             });
             htmlList.innerHTML = content.join('');
         }
