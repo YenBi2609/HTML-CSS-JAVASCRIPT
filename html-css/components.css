@@ -1,0 +1,87 @@
+.body {
+    font-family: Arial, sans-serif;
+}
+
+.weekly-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #EEE;
+}
+
+.weekly-item .number {
+    font-size: 20px;
+    padding: 0 8px;
+}
+
+.weekly-item .info {
+    font-size: 14px;
+    flex-grow: 1;
+}
+
+.weekly-item .song-title {
+    margin-bottom: 8px;
+}
+
+.weekly-item .singer {
+    font-size: 13px;
+    color: #999;
+}
+
+.weekly-item .view-count {
+    font-size: 13px;
+    color: #999;
+}
+
+.album-cover {
+    width: 128px;
+    height: 128px;
+    background-color: #DDD;
+    background-image: url(https://via.placeholder.com/128x128);
+    background-size: cover;
+    background-position: center;
+    font-family: sans-serif;
+    color: #999;
+
+}
+.album-square {
+    width: 128px;
+    height: 128px;
+    background-color: #DDD;
+    background-image: url(https://via.placeholder.com/128x128);
+    background-size: cover;
+    background-position: center;
+    font-family: sans-serif;
+    color: #999;
+    font-size: 50px;
+}
+.album-square .overlay{
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: all 0.5s;
+}
+.album-square .overlay i{
+    transform: scale(0);
+    transition: all 0.5s;
+}
+.album-square:hover .overlay{
+    opacity: 1;
+}
+.album-square:hover .overlay i{
+    transform: scale(1);
+}
+
+.album-cover .overlay {
+    height: 100%;
+    background: rgb(2, 0, 36);
+    background: linear-gradient(0deg, rgba(2, 0, 36, 1) 0%, rgba(0, 0, 5, 0.20772058823529416) 100%, rgba(0, 212, 255, 1) 100%);
+    display: flex;
+    align-items: flex-end;
+    font-size: 20px;
+    padding: 8px;
+    box-sizing: border-box;
+}
