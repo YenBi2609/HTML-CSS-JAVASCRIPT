@@ -295,3 +295,56 @@ h2.feature-title {
     line-height: 100px;
 }
 
+#service {
+    width: 100%;   
+}
+#service .container {
+    width: 1140px;
+    margin: 100px auto;
+}
+#service .container h3{
+    color: #233e62;
+    text-align: center;
+}
+#service .container p.desc{
+    padding: 20px 0px 20px 0px;
+    text-align: center;
+    line-height: 28px;
+}
+#service .container ul.our-service{
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;
+}
+#service .container ul.our-service li{
+    float: left;
+    width: 320px;
+    margin-right: 50px;
+    margin-bottom: 50px;
+}
+#service .container ul.our-service li h2{
+   color: #233e62;
+   font-size: 20px;
+   text-align: center;
+   margin-bottom: 20px;
+   margin-top: 20px;
+}
+#service .container ul.our-service li p{
+    color: gray;
+    line-height: 28px;
+    text-align: center;
+ }
+ #service .container ul.our-service .icon{
+    text-align: center;
+ }
+ #service .container ul.our-service .far{
+    font-size: 50px;
+ }
+ #footer {
+     width: 100%;
+     background: rgba(0,0,0,0.7);
+     text-align: center;
+     height: 100px;
+     line-height: 100px;
+     color: white;
+ }
