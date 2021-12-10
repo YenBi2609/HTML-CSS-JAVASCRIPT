@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>VueJS</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
+    <style>
+        .box {
+            background-color: aqua;
+            width: 100px;
+            height: 100px;
+            position: relative;
+        }
+        .box2 {
+            width: 50px;
+            height: 50px;
+            position: absolute;
+            background-color: red;
+            right: 0;
+        }
+        .demo {
+            width: 100px;
+            height: 100px;
+            background-color: orange;
+        }
+        .demo.active {
+            background-color: blue;
+        }
+        .demo.error {
+            background-color: brown;
+        }
+        .tabs li {
+            border: 1px solid ;
+            background-color: #FFF;
+            display: inline-block;
+            padding: 10px;
+            margin-right: 40px;
+            list-style-type: none;
+            cursor: pointer;
+        }
+        .login, .register{
+            border: 1px solid blue;
+            padding-bottom: 10px;
+            padding-left: 10px;
+            margin-top: 30px;
+        }
+        .list-blog {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .list-blog .blog {
+            width: 21%;
+            margin: 2%;
+            border: 1px solid #000;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Header</h1>
+    </header>
+    <div class="container">
+        <div id="app">
+            <div class="user" v-for="user in userIsactive">{{user.email}}</div>
+            <div class="list-blog">
+                <div v-for="(value, key) in listBlogs" class="blog" v-bind:key="key">
+                    <div class="title">{{value.title}}</div>
+                    <div class="description">{{value.body}}</div>
+                </div>
+            </div>
+            <ul>
+                <li v-for="(value,key) in scores">{{key}} : {{value}}</li>
+            </ul>
+
+            <ul class="tabs">
+                <li v-on:click="changeTabs('login')">Dang Nhap</li>
+                <li v-on:click="changeTabs('register')">Dang Ky</li>
+            </ul>
+            <div class="login" v-if="tabSelected === 'login'">
+                <h2>Form Dang Nhap</h2>
+                <form action="">
+                    <label for="">Tên đăng nhập</label>
+                    <input type="text"> <br> <br>
+                    <label for="">Mật khẩu</label>
+                    <input type="password">
+                </form>
+            </div>
+            <!-- <div class="register" v-show="tabSelected === 'register'"> -->
+            <!-- <div class="register" v-else> -->
+            <div class="register" v-else-if="tabSelected === 'register'">
+                <h2>Form Dang Ky</h2>
+                <form action="">
+                    <label for="">Tên đăng ký</label>
+                    <input type="text"> <br> <br>
+                    <label for="">Mật khẩu</label>
+                    <input type="password"> <br> <br>
+                    <label for="">Nhập lại password</label>
+                    <input type="password">
+                </form>
+            </div>
+            <hr>
+            <h2>Count {{count}}</h2>
+            <p>{{reversedTitle}}</p>
+            <hr>
+            <!-- <button v-on:click="count += 2">Click</button> -->
+            <button v-on:click="handleClick($event, 5)">Click</button>
+            <div class="box" v-on:mousemove="handleMouseMove">
+                <p>ClientX,Y: {{clientX}}, {{clientY}}</p>
+                <div class="box2" v-on:mousemove.stop="handleMouseMove2"></div>
+            </div>
+
+            <textarea v-model="textarea" cols="30" rows="10"></textarea>
+            <textarea name="" id="" cols="30" rows="10">{{textarea}}</textarea>
+
+            <hr>
+            <div v-bind:style="{ color: activeColor, fontSize: fontSize + 'px', marginTop: '20px', backgroundImage: 'url('+ background+ ')' }">Test</div>
+            <hr>
+            <div class="demo" v-bind:style="objStyle"></div>
+
+            <!-- <div v-bind:class="'demo-' + price + ' abc'"></div> -->
+            <div class="demo" v-bind:class="objClass"></div>
+            <button v-on:click="changeActive">Change activie</button>
+            <hr>
+
+            <form action="./server.php" v-on:submit.prevent="handleSubmitForm">
+                <label>Nhap first name</label>
+                <!-- <input v-on:keyup="handleKeyUp" type="text" name="firstName" placeholder="Nhap first name">  -->
+                <input v-model="firstName" type="text" name="firstName" placeholder="Nhap first name"> 
+                <p>First Name: {{firstName}}</p> <br>
+
+                <label>Nhap email</label>
+                <input type="email" name="email"> <br>
+                <button type="submit">Dang Nhap</button>
+            </form>
+            <hr>
+            <div class="cart">Giỏ hàng ({{ cardNumber }})</div>
+            <div class="product">
+                <div class="product-image">
+                    <div class="image">
+                        <img v-bind:src="getProduct.image" alt="">
+                    </div>
+                </div>
+                <div class="product-content">
+                    <h3 class="title">
+                    <a v-bind:href="url" v-bind:target="target">{{ title }}</a>
+                    </h3>
+                    {{ check ? 'Ve ben trai' : 'Ve ben phai'}}
+                    <p class="brand">Thương hiệu: No brand</p>
+                    <p class="quantity" v-if="getProduct.quantity > 0">Còn lại: {{ getProduct.quantity }} Sản phẩm</p>
+                    <p class="quantity" v-if="getProduct.quantity <= 0">Sản phẩm đã hết hàng</p>
+
+                    <div class="wrapper-price">
+                        <div class="final-price">{{ formatFinalPrice }}</div>
+                        <div class="origin-price">{{ formatOriginalPrice }}</div>
+                        <div class="sale-price">-{{sale * 100}}%</div>
+                    </div>
+                    <div class="wrapper-color">
+                        <div class="text">Màu sắc</div>
+                        <div class="list-color">
+                            <p class="color-text">{{ getProduct.textColor }}</p>
+                            <ul>
+                                <li 
+                                    v-for="(item, index) in listProductDetail"
+                                    v-bind:class="classActive(index)"
+                                    v-bind:key="index"
+                                    v-on:click="handleClickColor($event, index)">
+                                    <img v-bind:src="item.image" v-bind:alt="item.textColor">
+                                    <!-- index của mảng -->
+                                </li>
+                                <!-- <li><img src="./images/blue.jpg" alt="color"></li> -->
+                                <!-- <li><img src="./images/red.jpg" alt="color"></li> -->
+                            </ul>
+                        </div>
+                    </div>
+                    <button 
+                        v-on:click="handleAddToCart"
+                        class="add-to-cart">Add to cart</button>
+                </div>
+                
+            </div>
+            <div class="description">
+                <ul class="extra-info">
+                    <li v-for="item in listDesc">{{ item }}</li>
+                </ul>
+                <h2>Chất liệu bền chặt&nbsp;</h2>
+                <!-- v-html -->
+                {{ testDescription }}
+                <div v-html="description"></div>
+            </div>
+                
+        </div>
+    </div>
+    <footer>
+        <h1>Footer</h1>
+    </footer>
+</body>
+<script src="main.js"></script>
+
+</html>
