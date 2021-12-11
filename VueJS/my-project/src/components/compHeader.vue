@@ -1,5 +1,10 @@
 <template>
   <header>
+    <hr>
+    <slot></slot>
+    <hr>
+    <button class="change" v-on:click="handleClickInputFile">Thay đổi data</button>
+    <input type="file" style="display: none;" ref="fileInputData">
     <h1>
       {{ titleHeader }} <br />
       <button v-on:click="changeTitle">
@@ -27,8 +32,18 @@ export default {
        this.$emit('changeTitleEvent', data);
 
     },
+    handleClickInputFile(){
+       this.$refs.fileInputData.click();
+    }
   },
 };
 </script>
 <style>
+.change {
+  color: white;
+  background-color: #333;
+  transition: all 3s ease;
+  padding: 12px 15px;
+  border: 1px solid #333;
+}
 </style>
