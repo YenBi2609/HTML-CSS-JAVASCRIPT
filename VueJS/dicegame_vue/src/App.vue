@@ -1,326 +1,159 @@
 <template>
   <div id="app">
-        <div class="wrapper clearfix">
-            <players/>
-            <controls/>
-            <dices/>           
-        </div>
+    <div class="wrapper clearfix">
+      <players
+        :isWinner="isWinner"
+        v-bind:scoresPlayer="scoresPlayer"
+        v-bind:currentScore="currentScore"
+        v-bind:activePlayer="activePlayer"
+      />
+      <controls
+        :isPlaying="isPlaying"
+        v-bind:finalScore="finalScore"
+        v-on:handleChangeFinalScore="handleChangeFinalScore"
+        v-on:handleNewGame="handleNewGame"
+        v-on:handleRollDice="handleRollDice"
+        v-on:handleHoldScore="handleHoldScore"
+      />
+      <dices v-bind:dices="dices" />
+      <popup-rule
+        v-bind:isOpenPopup="isOpenPopup"
+        v-on:handleConfirm="handleConfirm"
+      />
+    </div>
   </div>
 </template>
 
 <script>
-import Players from './components/Players';
-import Controls from './components/Controls';
-import Dices from './components/Dices';
+import Players from "./components/Players";
+import Controls from "./components/Controls";
+import Dices from "./components/Dices";
+import PopupRule from "./components/popupRule";
 export default {
-  components: { Players },
-  name: 'app',
-  data () {
+  name: "app",
+  data() {
     return {
-      
-    }
+      isPlaying: false,
+      isOpenPopup: false,
+      activePlayer: 1,
+      scoresPlayer: [14, 33],
+      currentScore: 30,
+      dices: [2, 5],
+      finalScore: 10
+    };
   },
   components: {
     Players,
     Controls,
-    Dices
+    Dices,
+    PopupRule,
+  },
+  methods: {
+    handleChangeFinalScore(e){
+      var number = parseInt(e.target.value);
+      if(isNaN(number)){
+        this.finalScore = '';
+      }else this.finalScore = number;
+    },
+    nextPlayer() {
+      this.activePlayer = this.activePlayer === 0 ? 1 : 0;
+      this.currentScore = 0;
+    },
+    handleNewGame() {
+      this.isOpenPopup = true;
+    },
+    handleConfirm() {
+      this.isOpenPopup = false;
+      this.isPlaying = true;
+      this.activePlayer = 0;
+      this.scoresPlayer = [0, 0];
+      this.currentScore = 0;
+      this.dices = [1, 1];
+    },
+    handleRollDice() {
+      if (this.isPlaying == true) {
+        var dice1 = Math.floor(Math.random() * 6) + 1;
+        var dice2 = Math.floor(Math.random() * 6) + 1;
+        this.dices = [dice1, dice2];
+        if (dice1 === 1 || dice2 === 1) {
+          setTimeout(() => {
+            alert(
+              `Người chơi ${this.activePlayer + 1} đã quay trúng số 1. Rất tiếc`
+            );
+          }, 10);
+          // dùng function thường --> biến this ko còn của thằng vue -> nan // arrow function ko có biến this
+          this.nextPlayer();
+        } else {
+          this.currentScore += dice1 + dice2;
+        }
+      } else alert("Vui lòng nhấn vào nút new game");
+    },
+    handleHoldScore() {
+      if (this.isPlaying == true) {
+        let { scoresPlayer, activePlayer, currentScore } = this;
+        // let cloneScorePlayer = [...scoresPlayer];
+        // cloneScorePlayer[activePlayer] = scoresPlayer[activePlayer] + currentScore;
+        // this.scoresPlayer = cloneScorePlayer;
+        this.$set(
+          this.scoresPlayer,
+          activePlayer,
+          scoresPlayer[activePlayer] + currentScore
+        );
+        if(!this.isWinner){
+        this.nextPlayer();}
+
+      } else alert("Vui lòng nhấn vào nút new game");
+    }
+  },
+  computed: {
+    isWinner() {
+      let { scoresPlayer , finalScore } = this;
+      if(scoresPlayer[0] >= finalScore || scoresPlayer[1] >= finalScore ){
+        this.isPlaying = false;
+        return true;
+      }
+      else return false;
+    }
   }
-}
+};
 </script>
 
 <style>
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 .clearfix::after {
-    content: "";
-    display: table;
-    clear: both;
+  content: "";
+  display: table;
+  clear: both;
 }
 
 body {
-    background-image: linear-gradient(rgba(62, 20, 20, 0.4), rgba(62, 20, 20, 0.4)), url('/public/assets/back.jpg');
-    background-size: cover;
-    background-position: center;
-    font-family: Lato;
-    font-weight: 300;
-    position: relative;
-    height: 100vh;
-    color: #555;
+  background-image: linear-gradient(
+      rgba(62, 20, 20, 0.4),
+      rgba(62, 20, 20, 0.4)
+    ),
+    url("/public/assets/back.jpg");
+  background-size: cover;
+  background-position: center;
+  font-family: Lato;
+  font-weight: 300;
+  position: relative;
+  height: 100vh;
+  color: #555;
 }
 
 .wrapper {
-    width: 1000px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #fff;
-    box-shadow: 0px 10px 50px rgba(0, 0, 0, 0.3);
-    overflow: hidden;
-}
-
-
-
-
-/**********************************************
-*** PLAYERS
-**********************************************/
-.player-panel {
-    width: 50%;
-    float: left;
-    height: 600px;
-    padding: 100px;
-    transition: all .3s ease;
-    background-color: #fff;
-}
-.player-name {
-    font-size: 40px;
-    text-align: center;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    font-weight: 100;
-    margin-top: 20px;
-    margin-bottom: 10px;
-    position: relative;
-}
-
-.player-score {
-    text-align: center;
-    font-size: 80px;
-    font-weight: 100;
-    color: #42b983;
-    margin-bottom: 130px;
-}
-
-.active { background-color: #f7f7f7; }
-.active .player-name { font-weight: 300; }
-
-.active .player-name::after {
-    content: "\2022";
-    font-size: 47px;
-    position: absolute;
-    color: #42b983;
-    top: -7px;
-    right: 10px;
-    
-}
-
-.player-current-box {
-    background-color: #42b983;
-    color: #fff;
-    width: 40%;
-    margin: 0 auto;
-    padding: 12px;
-    text-align: center;
-}
-
-.player-current-label {
-    text-transform: uppercase;
-    margin-bottom: 10px;
-    font-size: 12px;
-    color: #222;
-}
-
-.player-current-score {
-    font-size: 30px;
-}
-
-.winner { background-color: #f7f7f7; }
-.winner .player-name { font-weight: 300; color: #42b983; }
-
-
-/**********************************************
-*** Control
-**********************************************/
-.control {
-    position: absolute;
-    width: 200px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: #555;
-    background: none;
-    border: none;
-    font-family: Lato;
-    font-size: 20px;
-    text-transform: uppercase;
-    cursor: pointer;
-    font-weight: 300;
-    transition: background-color 0.3s, color 0.3s;
-}
-.control.disable {
-    pointer-events: none;
-}
-
-.control:hover { font-weight: 600; }
-.control:hover i { margin-right: 20px; }
-
-.control:focus {
-    outline: none;
-}
-
-.control i {
-    color: #42b983;
-    display: inline-block;
-    margin-right: 15px;
-    font-size: 32px;
-    line-height: 1;
-    vertical-align: text-top;
-    margin-top: -4px;
-    transition: margin 0.3s;
-}
-
-.btn-new { top: 45px;}
-.btn-roll { top: 403px;}
-.btn-hold { top: 467px;}
-
-.final-score {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    top: 520px;
-    color: #555;
-    font-size: 18px;
-    font-family: 'Lato';
-    text-align: center;
-    padding: 10px;
-    width: 160px;
-    text-transform: uppercase;
-}
-
-.final-score:focus { outline: none; }
-
-
-/* dice */
-
-#dice-1 { top: 120px; }
-#dice-2 { top: 250px; }
-
-.dice {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 120px;
-    height: 120px;
-    box-shadow: 0px 10px 60px rgba(0, 0, 0, 0.10);
-}
-.spinner div {
-    position: absolute;
-    width: 120px;
-    height: 120px;
-    border: 1px solid #ccc;
-    box-shadow: 0 0 20px rgba(0,0,0,0.2);
-    text-align: center;
-    line-height: 120px;
-    font-size: 100px;
-    color: #42b983;
-    font-size: 0;
-    transition: all .3s ease;
-    opacity: 1;
-}
-
-.spinner .face1 { 
-    -webkit-transform: translateZ(60px);
-    -ms-transform: translateZ(60px);
-    transform: translateZ(60px);
-    background-image: url("/public/assets/dice-1.png");
-    background-position: center;
-    background-size: cover;
-}
-.spinner .face2 { 
-    -webkit-transform: rotateY(90deg) translateZ(60px); 
-    -ms-transform: rotateY(90deg) translateZ(60px); 
-    transform: rotateY(90deg) translateZ(60px); 
-    background-image: url("/public/assets/dice-2.png");
-    background-position: center;
-    background-size: cover;
-}
-.spinner .face3 { 
-    -webkit-transform: rotateY(90deg) rotateX(90deg) translateZ(60px); 
-    -ms-transform: rotateY(90deg) rotateX(90deg) translateZ(60px); 
-    transform: rotateY(90deg) rotateX(90deg) translateZ(60px); 
-    background-image: url("/public/assets/dice-3.png");
-    background-position: center;
-    background-size: cover;
-}
-.spinner .face4 { 
-    -webkit-transform: rotateY(180deg) rotateZ(90deg) translateZ(60px); 
-    -ms-transform: rotateY(180deg) rotateZ(90deg) translateZ(60px); 
-    transform: rotateY(180deg) rotateZ(90deg) translateZ(60px); 
-    background-image: url("/public/assets/dice-4.png");
-    background-position: center;
-    background-size: cover;
-}
-.spinner .face5 { 
-    -webkit-transform: rotateY(-90deg) rotateZ(90deg) translateZ(60px); 
-    -ms-transform: rotateY(-90deg) rotateZ(90deg) translateZ(60px); 
-    transform: rotateY(-90deg) rotateZ(90deg) translateZ(60px); 
-    background-image: url("/public/assets/dice-5.png");
-    background-position: center;
-    background-size: cover;
-}
-.spinner .face6 { 
-    -webkit-transform: rotateX(-90deg) translateZ(60px); 
-    -ms-transform: rotateX(-90deg) translateZ(60px); 
-    transform: rotateX(-90deg) translateZ(60px); 
-    background-image: url("/public/assets/dice-6.png");
-    background-position: center;
-    background-size: cover;
-}
-
-.spinner {
-    -webkit-transform-style: preserve-3d;
-    -ms-transform-style: preserve-3d;
-    transform-style: preserve-3d;
-    -webkit-transform-origin: 60px 60px 0;
-    -ms-transform-origin: 60px 60px 0;
-    transform-origin: 60px 60px 0;
-    -webkit-transition: all .9s ease;
-    -o-transition: all .9s ease;
-    transition: all .9s ease;
-    -webkit-transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
-    -ms-transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
-    -o-transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
-	transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
-}
-.spinner.dice-1 {
-	-webkit-transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
-    -ms-transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
-    -o-transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
-    transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
-}
-.spinner.dice-2 {
-	-webkit-transform: rotateX(0deg) rotateY(-90deg) rotateZ(0deg);
-    -ms-transform: rotateX(0deg) rotateY(-90deg) rotateZ(0deg);
-    -o-transform: rotateX(0deg) rotateY(-90deg) rotateZ(0deg);
-    transform: rotateX(0deg) rotateY(-90deg) rotateZ(0deg); 
-}
-.spinner.dice-3 {
-    -webkit-transform: rotateX(0deg) rotateY(-90deg) rotateZ(90deg);
-    -ms-transform: rotateX(0deg) rotateY(-90deg) rotateZ(90deg);
-    -o-transform: rotateX(0deg) rotateY(-90deg) rotateZ(90deg);
-    transform: rotateX(0deg) rotateY(-90deg) rotateZ(90deg); 
-}
-.spinner.dice-4 {
-    -webkit-transform: rotateX(0deg) rotateY(180deg) rotateZ(90deg);
-    -ms-transform: rotateX(0deg) rotateY(180deg) rotateZ(90deg);
-    -o-transform: rotateX(0deg) rotateY(180deg) rotateZ(90deg);
-    transform: rotateX(0deg) rotateY(180deg) rotateZ(90deg); 
-}
-.spinner.dice-5 {
-    -webkit-transform: rotateX(0deg) rotateY(90deg) rotateZ(0deg);
-    -ms-transform: rotateX(0deg) rotateY(90deg) rotateZ(0deg);
-    -o-transform: rotateX(0deg) rotateY(90deg) rotateZ(0deg);
-    transform: rotateX(0deg) rotateY(90deg) rotateZ(0deg); 
-}
-.spinner.dice-6 {
-    -webkit-transform: rotateX(90deg) rotateY(90deg) rotateZ(0deg);
-    -ms-transform: rotateX(90deg) rotateY(90deg) rotateZ(0deg);
-    -o-transform: rotateX(90deg) rotateY(90deg) rotateZ(0deg);
-    transform: rotateX(90deg) rotateY(90deg) rotateZ(0deg); 
+  width: 1000px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  box-shadow: 0px 10px 50px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
 }
 </style>
