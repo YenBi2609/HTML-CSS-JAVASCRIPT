@@ -45,6 +45,11 @@ import compHeader from "./components/compHeader.vue";
 import compFooter from "./components/compFooter.vue";
 import ListUser from "./components/listUsers.vue";
 import CompTabs from "./components/compTabs.vue";
+import Vue from 'vue'
+import Vuetify from 'vuetify'
+import 'vuetify/dist/vuetify.min.css'
+
+Vue.use(Vuetify)
 export default {
   name: "app",
   data() {
