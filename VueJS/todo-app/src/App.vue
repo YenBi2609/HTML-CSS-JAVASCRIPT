@@ -1,5 +1,5 @@
 <template>
-  <v-app id="inspire">
+  <v-app>
     <v-navigation-drawer v-model="drawer" app>
       <v-list-item>
         <v-list-item-content>
@@ -23,13 +23,7 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar
-      app
-      color="#fcb69f"
-      dark
-      src="https://picsum.photos/1920/1080?random"
-      prominent
-    >
+    <v-app-bar app color="indigo darken-2" dark shrink-on-scroll>
       <template v-slot:img="{ props }">
         <v-img
           v-bind="props"
@@ -43,21 +37,19 @@
 
       <v-spacer></v-spacer>
 
-      <v-btn icon>
-        <v-icon>mdi-magnify</v-icon>
-      </v-btn>
-
-      <v-btn icon>
-        <v-icon>mdi-heart</v-icon>
-      </v-btn>
-
-      <v-btn icon>
-        <v-icon>mdi-dots-vertical</v-icon>
-      </v-btn>
+      <v-text-field
+        v-model="searchQuery"
+        class="search"
+        outlined
+        label="Search"
+        append-icon="mdi-magnify"
+        hide-details
+        clearable
+      ></v-text-field>
     </v-app-bar>
 
     <v-main>
-      <router-view></router-view>
+      <router-view :searchQuery="searchQuery"></router-view>
       <!--  -->
     </v-main>
   </v-app>
@@ -68,9 +60,15 @@ export default {
   data: () => ({
     drawer: null,
     items: [
-      { title: "Todo", icon: "mdi-view-dashboard", to: "/" },
+      { title: "Todo", icon: "mdi-view-dashboard", to: "/todo" },
       { title: "About", icon: "mdi-image", to: "/about" },
     ],
-  }),
+    searchQuery: null
+  })
 };
 </script>
+<style scoped>
+.search {
+  width: 10px !important;
+}
+</style>

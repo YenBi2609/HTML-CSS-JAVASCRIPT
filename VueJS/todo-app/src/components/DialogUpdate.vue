@@ -11,10 +11,8 @@
         </v-card-title>
         <v-card-text>
                 <v-text-field
-                 :value="updateTask"
+                 :value="dataUpdate"
                  @input="value => handleUpdate(value)"
-                ></v-text-field>
-                <v-text-field
                 ></v-text-field>
         </v-card-text>
         <v-card-actions>
@@ -49,12 +47,18 @@ export default {
           dataUpdate: ''
       }
   },
+  watch:  {
+    updateTask(){
+      this.dataUpdate = this.updateTask;
+    }
+  },
   methods: {
     handleConfirmUpdate(){
+      
       this.$emit('handleConfirmUpdate',this.dataUpdate);
     },
     handleConfirmCancel(){
-        this.dataUpdate = '';
+        this.dataUpdate = this.updateTask; 
         this.$emit('handleConfirmCancel');
     },
     handleUpdate(value){

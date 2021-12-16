@@ -1,5 +1,5 @@
 <template>
-  <div class="home pa-0">
+  <div class="pa-0">
     <v-text-field
       v-model="newTaskTitle"
       @click:append="addTask()"
@@ -12,7 +12,7 @@
       clearable
     ></v-text-field>
     <v-list flat>
-      <div v-for="task in tasks" :key="task.id">
+      <div v-for="task in resultQuery" :key="task.id" class="pa-3">
         <v-list-item
           @click="doneTask(task.id)"
           :class="{ 'blue lighten-3': task.done }"
@@ -66,14 +66,17 @@ import DialogUpdate from "../components/DialogUpdate";
 import axios from "axios";
 
 export default {
-  name: "Home",
+  name: "Todo",
+  props: {
+    searchQuery : {type: String, default: ''}
+  },
   data() {
     return {
       displayDialogDelete: false,
       displayDialogUpdate: false,
       newTaskTitle: "",
       idSelected: "1",
-      titleSelected: "123",
+      titleSelected: "",
       tasks: [],
     };
   },
@@ -85,9 +88,25 @@ export default {
     doneTask(id) {
       let task = this.tasks.filter((task) => task.id === id)[0];
       task.done = !task.done;
+      this.idSelected = id;
+      this.getTitleTaskIsUpdated();
+
+      axios
+        .put("http://localhost/todo-app/api/task/update.php", {
+          id: id,
+          title: this.titleSelected,
+          done: task.done.toString(),
+        })
+        .then((res) => {
+          if (res.status == 200) {
+            this.getTask();
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
     deleteTask(id) {
-      // this.tasks = this.tasks.slice((id-1),1);
       this.displayDialogDelete = true;
       this.idSelected = id;
     },
@@ -97,19 +116,15 @@ export default {
       this.getTitleTaskIsUpdated();
     },
     addTask() {
-      // this.tasks.push({
-      //   id: Date.now(),
-      //   title: this.newTaskTitle,
-      //   done: false,
-      // });
-
-      axios.post("http://localhost/todo-app/api/task/create.php", {
+      axios
+        .post("http://localhost/todo-app/api/task/create.php", {
           title: this.newTaskTitle,
-          done: "false"
+          done: "false",
         })
         .then((res) => {
           if (res.status == 200) {
             this.newTaskTitle = "";
+            this.getTask();
           }
         })
         .catch((err) => {
@@ -119,6 +134,21 @@ export default {
     handleConfirmDelete() {
       this.displayDialogDelete = false;
       this.tasks = this.tasks.filter((task) => task.id != this.idSelected);
+      console.log(this.idSelected);
+      axios
+        .delete("http://localhost/todo-app/api/task/delete.php", {
+          data: {
+            id: this.idSelected,
+          },
+        })
+        .then((res) => {
+          if (res.status == 200) {
+            // this.getTask();
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
     handleConfirmCancel() {
       this.displayDialogUpdate = false;
@@ -128,13 +158,31 @@ export default {
       this.displayDialogUpdate = false;
       let task = this.tasks.filter((task) => task.id === this.idSelected);
       task[0].title = newTitle;
+
+      axios
+        .put("http://localhost/todo-app/api/task/update.php", {
+          id: this.idSelected,
+          title: newTitle,
+          done: this.tasks
+            .filter((task) => task.id === this.idSelected)[0]
+            .done.toString(),
+        })
+        .then((res) => {
+          if (res.status == 200) {
+            // this.getTask();
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
     getTitleTaskIsUpdated() {
       let task = this.tasks.filter((task) => task.id === this.idSelected);
       this.titleSelected = task[0].title;
     },
     getTask() {
-      axios.get("http://localhost/todo-app/api/task/read.php")
+      axios
+        .get("http://localhost/todo-app/api/task/read.php")
         .then((res) => {
           res.data.task.map(function (a) {
             a.done = a.done === "true";
@@ -149,5 +197,16 @@ export default {
   created() {
     this.getTask();
   },
+  computed: {
+    resultQuery(){
+      if(this.searchQuery){
+      return this.tasks.filter((item)=>{
+        return this.searchQuery.toLowerCase().split(' ').every(v => item.title.toLowerCase().includes(v))
+      })
+      }else{
+        return this.tasks;
+      }
+    }
+  }
 };
 </script>
