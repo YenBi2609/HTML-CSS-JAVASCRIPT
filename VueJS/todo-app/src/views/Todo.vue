@@ -1,5 +1,48 @@
 <template>
-  <div class="pa-0">
+  <div>
+    <v-card class="overflow-y-auto" height="515">
+      <v-list class="pa-0 pt-2" flat>
+        <div v-for="task in resultQuery" :key="task.id" class="pl-6 pr-6">
+          <v-list-item
+            @click="doneTask(task.id)"
+            :class="{ 'blue lighten-3': task.done }"
+            class="pa-0"
+          >
+            <template v-slot:default>
+              <v-list-item-action>
+                <v-checkbox
+                  :input-value="task.done"
+                  color="primary"
+                  class="pl-3"
+                ></v-checkbox>
+              </v-list-item-action>
+
+              <v-list-item-content>
+                <v-list-item-title
+                  :class="{ 'text-decoration-line-through': task.done }"
+                  >{{ task.title }}</v-list-item-title
+                >
+              </v-list-item-content>
+
+              <v-list-item-action>
+                <v-btn icon @click.stop="updateTask(task.id)">
+                  <v-icon color="primary lighten-1">mdi-lead-pencil</v-icon>
+                </v-btn>
+              </v-list-item-action>
+
+              <v-list-item-action>
+                <v-btn icon @click.stop="deleteTask(task.id)">
+                  <v-icon color="primary lighten-1">mdi-delete</v-icon>
+                </v-btn>
+              </v-list-item-action>
+            </template>
+          </v-list-item>
+
+          <v-divider></v-divider>
+        </div>
+      </v-list>
+    </v-card>
+
     <v-text-field
       v-model="newTaskTitle"
       @click:append="addTask()"
@@ -11,41 +54,7 @@
       hide-details
       clearable
     ></v-text-field>
-    <v-list flat>
-      <div v-for="task in resultQuery" :key="task.id" class="pa-3">
-        <v-list-item
-          @click="doneTask(task.id)"
-          :class="{ 'blue lighten-3': task.done }"
-        >
-          <template v-slot:default>
-            <v-list-item-action>
-              <v-checkbox :input-value="task.done" color="primary"></v-checkbox>
-            </v-list-item-action>
 
-            <v-list-item-content>
-              <v-list-item-title
-                :class="{ 'text-decoration-line-through': task.done }"
-                >{{ task.title }}</v-list-item-title
-              >
-            </v-list-item-content>
-
-            <v-list-item-action>
-              <v-btn icon @click.stop="updateTask(task.id)">
-                <v-icon color="primary lighten-1">mdi-lead-pencil</v-icon>
-              </v-btn>
-            </v-list-item-action>
-
-            <v-list-item-action>
-              <v-btn icon @click.stop="deleteTask(task.id)">
-                <v-icon color="primary lighten-1">mdi-delete</v-icon>
-              </v-btn>
-            </v-list-item-action>
-          </template>
-        </v-list-item>
-
-        <v-divider></v-divider>
-      </div>
-    </v-list>
     <dialog-delete
       v-bind:dialogDelete="displayDialogDelete"
       v-on:handleConfirmDelete="handleConfirmDelete"
@@ -68,7 +77,7 @@ import axios from "axios";
 export default {
   name: "Todo",
   props: {
-    searchQuery : {type: String, default: ''}
+    searchQuery: { type: String, default: "" },
   },
   data() {
     return {
@@ -96,11 +105,6 @@ export default {
           id: id,
           title: this.titleSelected,
           done: task.done.toString(),
-        })
-        .then((res) => {
-          if (res.status == 200) {
-            this.getTask();
-          }
         })
         .catch((err) => {
           console.log(err);
@@ -141,11 +145,6 @@ export default {
             id: this.idSelected,
           },
         })
-        .then((res) => {
-          if (res.status == 200) {
-            // this.getTask();
-          }
-        })
         .catch((err) => {
           console.log(err);
         });
@@ -167,11 +166,6 @@ export default {
             .filter((task) => task.id === this.idSelected)[0]
             .done.toString(),
         })
-        .then((res) => {
-          if (res.status == 200) {
-            // this.getTask();
-          }
-        })
         .catch((err) => {
           console.log(err);
         });
@@ -187,7 +181,9 @@ export default {
           res.data.task.map(function (a) {
             a.done = a.done === "true";
           });
-          this.tasks = res.data.task;
+          this.tasks = res.data.task.sort(function (a, b) {
+            return b.id - a.id;
+          });
         })
         .catch((err) => {
           console.log(err);
@@ -198,15 +194,19 @@ export default {
     this.getTask();
   },
   computed: {
-    resultQuery(){
-      if(this.searchQuery){
-      return this.tasks.filter((item)=>{
-        return this.searchQuery.toLowerCase().split(' ').every(v => item.title.toLowerCase().includes(v))
-      })
-      }else{
+    resultQuery() {
+      if (this.searchQuery) {
+        // return this.tasks.filter((item)=>{
+        //   return this.searchQuery.toLowerCase().split(' ').every(v => item.title.toLowerCase().includes(v))
+        // })
+        let s = this.searchQuery.toLowerCase();
+        return this.tasks.filter((item) => {
+          return item.title.toLowerCase().includes(s);
+        });
+      } else {
         return this.tasks;
       }
-    }
-  }
+    },
+  },
 };
 </script>
