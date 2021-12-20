@@ -23,7 +23,7 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar app color="indigo darken-2" dark shrink-on-scroll>
+    <v-app-bar app color="indigo darken-2" dark shrink>
       <template v-slot:img="{ props }">
         <v-img
           v-bind="props"
@@ -33,19 +33,20 @@
 
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
-      <v-app-bar-title>Todo List</v-app-bar-title>
+      <v-app-bar-title class="todo">Todo List</v-app-bar-title>
 
       <v-spacer></v-spacer>
-
-      <v-text-field
+      <div> <v-text-field
         v-model="searchQuery"
         class="search"
+        dense
         outlined
         label="Search"
         append-icon="mdi-magnify"
         hide-details
         clearable
-      ></v-text-field>
+      ></v-text-field></div>
+      
     </v-app-bar>
 
     <v-main>
@@ -69,6 +70,10 @@ export default {
 </script>
 <style scoped>
 .search {
-  width: 10px !important;
+  width: 300px;
+  margin-top: 10px ;
+}
+.todo >>> .v-app-bar-title__content {
+  width: 100px !important;
 }
 </style>
